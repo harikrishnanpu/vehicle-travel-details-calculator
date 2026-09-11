@@ -1,19 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env.js";
+import type { AuthPayload } from "../types/auth.js";
 import { AppError } from "../utils/app.error.js";
-
-type AuthPayload = {
-  sub: string;
-};
-
-declare global {
-  namespace Express {
-    interface Request {
-      userId?: string;
-    }
-  }
-}
+import { AUTH_COOKIE } from "../utils/cookie.js";
 
 export function authMiddleware(
   req: Request,
@@ -21,13 +11,7 @@ export function authMiddleware(
   next: NextFunction,
 ) {
   try {
-    const header = req.headers.authorization;
-
-    if (!header?.startsWith("Bearer ")) {
-      throw new AppError("Unauthorized", 401);
-    }
-
-    const token = header.slice("Bearer ".length).trim();
+    const token = req.cookies?.[AUTH_COOKIE];
 
     if (!token) {
       throw new AppError("Unauthorized", 401);
