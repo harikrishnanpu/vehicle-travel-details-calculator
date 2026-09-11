@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { AppError } from "../utils/app-error.js";
+import { AppError } from "../utils/app.error.js";
 import { sendSuccess } from "../utils/response.js";
 import { validateSchema } from "../utils/validate.js";
 import { authService } from "../services/auth.service.js";

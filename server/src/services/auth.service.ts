@@ -1,35 +1,10 @@
-import type { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { env } from "../config/env.js";
-import { AppError } from "../utils/app-error.js";
+import { AppError } from "../utils/app.error.js";
+import { signToken } from "../utils/jwt.js";
+import { toPublicUser } from "../utils/user.js";
 import { userRepository } from "../repositories/user.repo.js";
 import type { LoginInput } from "../validators/login.schema.js";
 import type { SignupInput } from "../validators/signup.schema.js";
-
-export type PublicUser = {
-  id: string;
-  name: string;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-function toPublicUser(user: User): PublicUser {
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-  };
-}
-
-function signToken(userId: string) {
-  return jwt.sign({ sub: userId }, env.JWT_SECRET, {
-    expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"],
-  });
-}
 
 export const authService = {
   async signup(input: SignupInput) {

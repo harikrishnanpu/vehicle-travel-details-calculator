@@ -1,5 +1,5 @@
 import type { ZodType } from "zod";
-import { AppError } from "./app-error.js";
+import { AppError } from "./app.error.js";
 
 export function validateSchema<T>(schema: ZodType<T>, data: unknown): T {
   const result = schema.safeParse(data);
