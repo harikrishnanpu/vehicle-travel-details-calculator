@@ -5,9 +5,7 @@ export type InputProps = {
   name: string;
   type: string;
   value: string;
-  required?: boolean;
   autoComplete?: string;
-  minLength?: number;
   error?: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 };

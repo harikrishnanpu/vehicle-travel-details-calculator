@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getErrorMessage } from "../../../lib/api";
+import { getFieldError } from "../../../lib/zod-field-error";
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
+import { loginSchema } from "../login.schema";
 import { useAuth } from "../useAuth";
 
 export function LoginForm() {
@@ -11,16 +13,32 @@ export function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setEmailError("");
+    setPasswordError("");
+
+    const parsed = loginSchema.safeParse({
+      email,
+      password,
+    });
+
+    if (!parsed.success) {
+      setEmailError(getFieldError(parsed.error, "email"));
+      setPasswordError(getFieldError(parsed.error, "password"));
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      await login({ email, password });
+      await login(parsed.data);
       navigate("/dashboard");
     } catch (err) {
       setError(getErrorMessage(err));
@@ -30,15 +48,15 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form noValidate onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <Input
           label="Email"
           name="email"
-          type="email"
+          type="text"
           autoComplete="email"
-          required
           value={email}
+          error={emailError}
           onChange={(event) => setEmail(event.target.value)}
         />
 
@@ -47,8 +65,8 @@ export function LoginForm() {
           name="password"
           type="password"
           autoComplete="current-password"
-          required
           value={password}
+          error={passwordError}
           onChange={(event) => setPassword(event.target.value)}
         />
       </div>

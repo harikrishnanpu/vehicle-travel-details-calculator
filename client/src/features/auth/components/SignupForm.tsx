@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getErrorMessage } from "../../../lib/api";
+import { getFieldError } from "../../../lib/zod-field-error";
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
+import { signupSchema } from "../signup.schema";
 import { useAuth } from "../useAuth";
 
 export function SignupForm() {
@@ -12,22 +14,36 @@ export function SignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setNameError("");
+    setEmailError("");
+    setPasswordError("");
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    const parsed = signupSchema.safeParse({
+      name,
+      email,
+      password,
+    });
+
+    if (!parsed.success) {
+      setNameError(getFieldError(parsed.error, "name"));
+      setEmailError(getFieldError(parsed.error, "email"));
+      setPasswordError(getFieldError(parsed.error, "password"));
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      await signup({ name, email, password });
+      await signup(parsed.data);
       navigate("/dashboard");
     } catch (err) {
       setError(getErrorMessage(err));
@@ -37,25 +53,25 @@ export function SignupForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form noValidate onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <Input
           label="Name"
           name="name"
           type="text"
           autoComplete="name"
-          required
           value={name}
+          error={nameError}
           onChange={(event) => setName(event.target.value)}
         />
 
         <Input
           label="Email"
           name="email"
-          type="email"
+          type="text"
           autoComplete="email"
-          required
           value={email}
+          error={emailError}
           onChange={(event) => setEmail(event.target.value)}
         />
 
@@ -64,9 +80,8 @@ export function SignupForm() {
           name="password"
           type="password"
           autoComplete="new-password"
-          required
-          minLength={8}
           value={password}
+          error={passwordError}
           onChange={(event) => setPassword(event.target.value)}
         />
       </div>

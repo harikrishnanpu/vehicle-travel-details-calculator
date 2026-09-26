@@ -12,9 +12,7 @@ export function Input(props: InputProps) {
         name={props.name}
         type={props.type}
         value={props.value}
-        required={props.required}
         autoComplete={props.autoComplete}
-        minLength={props.minLength}
         onChange={props.onChange}
         className="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-600"
       />
