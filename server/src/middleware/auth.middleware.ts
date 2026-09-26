@@ -1,29 +1,25 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env.js";
-import type { AuthPayload } from "../types/auth.js";
 import { AppError } from "../utils/app.error.js";
 import { AUTH_COOKIE } from "../utils/cookie.js";
 
-export function authMiddleware(
-  req: Request,
-  _res: Response,
-  next: NextFunction,
-) {
+export function authMiddleware(req: Request, _res: Response, next: NextFunction) {
   try {
-    const token = req.cookies?.[AUTH_COOKIE];
+    const token = req.cookies?.token || req.cookies?.[AUTH_COOKIE];
 
     if (!token) {
       throw new AppError("Unauthorized", 401);
     }
 
-    const payload = jwt.verify(token, env.JWT_SECRET) as AuthPayload;
+    const payload = jwt.verify(token, env.jwtSecret) as { userId?: string; sub?: string };
+    const userId = payload.userId || payload.sub;
 
-    if (!payload.sub) {
+    if (!userId) {
       throw new AppError("Unauthorized", 401);
     }
 
-    req.userId = payload.sub;
+    req.userId = userId;
     next();
   } catch (err) {
     if (err instanceof AppError) {

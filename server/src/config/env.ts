@@ -1,18 +1,16 @@
 import "dotenv/config";
-import { createEnv } from "@t3-oss/env-core";
-import { z } from "zod";
 
-export const env = createEnv({
-  server: {
-    NODE_ENV: z
-      .enum(["development", "test", "production"])
-      .default("development"),
-    PORT: z.coerce.number().default(3000),
-    DATABASE_URL: z.string().min(1),
-    JWT_SECRET: z.string().min(1),
-    JWT_EXPIRES_IN: z.string().default("7d"),
-    CLIENT_ORIGIN: z.string().default("http://localhost:5173"),
-  },
-  runtimeEnv: process.env,
-  emptyStringAsUndefined: true,
-});
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is missing");
+}
+
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET is missing");
+}
+
+export const env = {
+  port: Number(process.env.PORT) || 3000,
+  jwtSecret: process.env.JWT_SECRET,
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  clientOrigin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+};

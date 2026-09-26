@@ -1,11 +1,6 @@
 import type { Response } from "express";
 
-export function sendSuccess(
-  res: Response,
-  data: unknown,
-  status = 200,
-  message = "success",
-) {
+export function sendSuccess(res: Response, data: unknown, status = 200, message = "success") {
   return res.status(status).json({
     success: true,
     data,

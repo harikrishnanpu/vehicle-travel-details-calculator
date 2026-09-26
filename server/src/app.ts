@@ -3,17 +3,19 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { env } from "./config/env.js";
 import { authRoutes } from "./routes/auth.routes.js";
+import { tripRoutes } from "./routes/trip.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 
 export const app = express();
 
 app.use(
   cors({
-    origin: env.CLIENT_ORIGIN,
+    origin: env.clientOrigin,
     credentials: true,
   }),
 );
-app.use(express.json({ limit: "2mb" }));
+
+app.use(express.json());
 app.use(cookieParser());
 
 app.get("/health", (_req, res) => {
@@ -21,5 +23,6 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/trips", tripRoutes);
 
 app.use(errorMiddleware);

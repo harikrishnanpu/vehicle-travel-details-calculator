@@ -1,16 +1,25 @@
-import type { Prisma } from "@prisma/client";
 import { prisma } from "../db/prisma.js";
 
-export const userRepository = {
-  create(data: Prisma.UserCreateInput) {
-    return prisma.user.create({ data });
+export const userRepo = {
+  findByEmail(email: string) {
+    return prisma.user.findUnique({
+      where: { email },
+    });
   },
 
   findById(id: string) {
-    return prisma.user.findUnique({ where: { id } });
+    return prisma.user.findUnique({
+      where: { id },
+    });
   },
 
-  findByEmail(email: string) {
-    return prisma.user.findUnique({ where: { email } });
+  create(data: { name: string; email: string; password: string }) {
+    return prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      },
+    });
   },
 };

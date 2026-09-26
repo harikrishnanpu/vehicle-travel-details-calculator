@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import type { PublicUser } from "../types/user.js";
+import type { PublicUser } from "../types/auth.js";
 
 export function toPublicUser(user: User): PublicUser {
   return {

@@ -1,13 +1,7 @@
-type BrandLogoProps = {
-  className?: string;
-};
+import type { BrandLogoProps } from "./brand-logo.types";
 
-export function BrandLogo({ className = "h-10 w-auto" }: BrandLogoProps) {
-  return (
-    <img
-      src="/logo.png"
-      alt="Speedo"
-      className={className}
-    />
-  );
+export function BrandLogo(props: BrandLogoProps) {
+  const className = props.className || "h-10 w-auto";
+
+  return <img src="/logo.png" alt="Speedo" className={className} />;
 }
