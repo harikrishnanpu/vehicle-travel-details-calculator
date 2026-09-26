@@ -17,31 +17,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
-
     async function loadUser() {
       try {
         const currentUser = await getMeRequest();
-
-        if (!cancelled) {
-          setUser(currentUser);
-        }
+        setUser(currentUser);
       } catch {
-        if (!cancelled) {
-          setUser(null);
-        }
+        setUser(null);
       } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     }
 
     loadUser();
-
-    return () => {
-      cancelled = true;
-    };
   }, []);
 
   async function login(input: LoginInput) {
@@ -63,9 +50,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider
-      value={{ user, isLoading, login, signup, logout }}
-    >
+    <AuthContext.Provider value={{ user, isLoading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

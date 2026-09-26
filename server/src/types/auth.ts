@@ -1,3 +1,18 @@
-export type AuthPayload = {
-  sub: string;
+export type SignupInput = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+export type LoginInput = {
+  email: string;
+  password: string;
+};
+
+export type PublicUser = {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
